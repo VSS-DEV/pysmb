@@ -975,14 +975,12 @@ c8 4f 32 4b 70 16 d3 01 12 78 5a 47 bf 6e e1 88
                     if starting_offset + remaining_len > file_len:
                         remaining_len = file_len - starting_offset
                     if show_progress:
-                        self.pbar = tqdm(
-                            total = remaining_len,
-                            unit="B",
-                            unit_scale=True,
-                            unit_divisor=1024,
-                            desc = f"Downloading {path}",
-                            **tqdm_kwargs
-                        )
+                        tqdm_kwargs.setdefault("total", remaining_len)
+                        tqdm_kwargs.setdefault("unit", "B")
+                        tqdm_kwargs.setdefault("unit_scale", True)
+                        tqdm_kwargs.setdefault("unit_divisor", 1024)
+                        tqdm_kwargs.setdefault("desc", f"Downloading {path}")
+                        self.pbar = tqdm(**tqdm_kwargs)
                     sendRead(kwargs['tid'], kwargs['fid'], starting_offset, remaining_len, 0, kwargs['file_attributes'])
             else:
                 errback(OperationFailure('Failed to retrieve %s on %s: Unable to retrieve information on file' % ( path, service_name ), messages_history))
@@ -1065,14 +1063,12 @@ c8 4f 32 4b 70 16 d3 01 12 78 5a 47 bf 6e e1 88
 
         if show_progress:
             total_bytes = os.stat(file_obj.name).st_size
-            self.pbar = tqdm(
-                total = total_bytes,
-                unit="B",
-                unit_scale=True,
-                unit_divisor=1024,
-                desc = f"Uploading {path}",
-                **tqdm_kwargs
-            )
+            tqdm_kwargs.setdefault("total", total_bytes)
+            tqdm_kwargs.setdefault("unit", "B")
+            tqdm_kwargs.setdefault("unit_scale", True)
+            tqdm_kwargs.setdefault("unit_divisor", 1024)
+            tqdm_kwargs.setdefault("desc", f"Uploading {path}")
+            self.pbar = tqdm(**tqdm_kwargs)
         def sendCreate(tid):
             create_context_data = binascii.unhexlify(b"""
 28 00 00 00 10 00 04 00 00 00 18 00 10 00 00 00
@@ -2478,14 +2474,12 @@ c8 4f 32 4b 70 16 d3 01 12 78 5a 47 bf 6e e1 88
                     callback(( file_obj, open_message.payload.file_attributes, 0 ))
                 else:
                     if show_progress and max_length > 0:
-                        self.pbar = tqdm(
-                            total=max_length,
-                            unit="B",
-                            unit_scale=True,
-                            unit_divisor=1024,
-                            desc = f"Downloading {path}",
-                            **tqdm_kwargs
-                        )
+                        tqdm_kwargs.setdefault("total", max_length)
+                        tqdm_kwargs.setdefault("unit", "B")
+                        tqdm_kwargs.setdefault("unit_scale", True)
+                        tqdm_kwargs.setdefault("unit_divisor", 1024)
+                        tqdm_kwargs.setdefault("desc", f"Downloading {path}")
+                        self.pbar = tqdm(**tqdm_kwargs)
                     sendRead(open_message.tid, open_message.payload.fid, starting_offset, open_message.payload.file_attributes, 0, max_length)
             else:
                 errback(OperationFailure('Failed to retrieve %s on %s: Unable to open file' % ( path, service_name ), messages_history))
@@ -2586,13 +2580,11 @@ c8 4f 32 4b 70 16 d3 01 12 78 5a 47 bf 6e e1 88
             messages_history.append(open_message)
             if not open_message.status.hasError:
                 if show_progress:
-                    self.pbar = tqdm(
-                        unit="B",
-                        unit_scale=True,
-                        unit_divisor=1024,
-                        desc = f"Uploading {path}",
-                        **tqdm_kwargs
-                    )
+                    tqdm_kwargs.setdefault("unit", "B")
+                    tqdm_kwargs.setdefault("unit_scale", True)
+                    tqdm_kwargs.setdefault("unit_divisor", 1024)
+                    tqdm_kwargs.setdefault("desc", f"Uploading {path}")
+                    self.pbar = tqdm(**tqdm_kwargs)
                 sendWrite(open_message.tid, open_message.payload.fid, starting_offset)
             else:
                 errback(OperationFailure('Failed to store %s on %s: Unable to open file' % ( path, service_name ), messages_history))
